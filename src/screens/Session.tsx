@@ -80,6 +80,49 @@ export default function Session({ id }: { id: string }) {
   )
 }
 
+/** Editar um treino já guardado. Trabalha numa cópia: só altera o histórico ao tocar em "Guardar alterações". */
+export function EditWorkout({ logId }: { logId: string }) {
+  const db = useDB()
+  const original = db.workouts.find((x) => x.id === logId && x.finished)
+  const [log, setLog] = useState<WorkoutLog | null>(() => (original ? structuredClone(original) : null))
+  const [open, setOpen] = useState(-1)
+  const w = log && WORKOUTS.find((x) => x.id === log.workout)
+  if (!log || !w) return <Page title="Editar treino" back="historico"><Empty>Treino não encontrado.</Empty></Page>
+
+  const set = (fn: (d: WorkoutLog) => void) => setLog((cur) => { const c = structuredClone(cur!); fn(c); return c })
+  const changed = JSON.stringify(log) !== JSON.stringify(original)
+  const save = () => {
+    update((db) => { db.workouts = db.workouts.map((x) => (x.id === log.id ? log : x)) })
+    go('historico')
+  }
+  const leave = () => (!changed || confirm('Sair sem guardar as alterações?')) && go('historico')
+
+  return (
+    <Page title={`Editar · ${w.name}`} action={<Pill>{log.exercises.filter((e) => e.done).length}/{log.exercises.length}</Pill>}>
+      <div className="-mt-2 flex items-center gap-2 text-sm text-mute">
+        <span>Data</span>
+        <input type="date" value={log.date} onChange={(e) => e.target.value && set((d) => { d.date = e.target.value })} className="rounded-lg border border-line bg-white px-2 py-1" />
+      </div>
+      {log.exercises.map((e, i) => (
+        <div key={i}>
+          {i === w.coreFrom && <h2 className="mt-2 mb-2 text-sm font-semibold uppercase tracking-wide text-mute">Core e abdominais</h2>}
+          <ExerciseCard e={e} item={w.items.find((it) => it.ex === e.ex) ?? w.items[i]} date={log.date} open={open === i}
+            onToggle={() => setOpen(open === i ? -1 : i)}
+            onChange={(fn) => set((d) => fn(d.exercises[i]))}
+            onComplete={() => { set((d) => { d.exercises[i].done = true }); setOpen(-1) }} />
+        </div>
+      ))}
+      <Card>
+        <Field label="Notas gerais do treino">
+          <textarea rows={3} className={inputCls + ' py-2'} value={log.notes} onChange={(ev) => set((d) => { d.notes = ev.target.value })} />
+        </Field>
+      </Card>
+      <Btn className="w-full min-h-14 text-base" disabled={!changed} onClick={save}><Icon name="check" />Guardar alterações</Btn>
+      <Btn variant="ghost" className="w-full" onClick={leave}>Cancelar</Btn>
+    </Page>
+  )
+}
+
 function ExerciseCard({ e, item, date, open, onToggle, onChange, onComplete }: {
   e: ExerciseLog; item: (typeof WORKOUTS)[number]['items'][number]; date: string; open: boolean
   onToggle: () => void; onChange: (fn: (e: ExerciseLog) => void) => void; onComplete: () => void

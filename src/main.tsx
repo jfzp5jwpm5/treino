@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import Home from './screens/Home.tsx'
 import { Plan, WorkoutDetail, ExerciseDetail, History } from './screens/Training.tsx'
-import Session from './screens/Session.tsx'
+import Session, { EditWorkout } from './screens/Session.tsx'
 import Running, { RunForm } from './screens/Running.tsx'
 import ProgressPage, { ReviewPage } from './screens/Progress.tsx'
 import Profile from './screens/Profile.tsx'
@@ -11,7 +11,7 @@ import { Icon, useRoute, go } from './ui.tsx'
 import { exportJSON } from './store.ts'
 
 const TABS = [
-  { path: '', label: 'Início', icon: 'home', match: ['', 'historico'] },
+  { path: '', label: 'Início', icon: 'home', match: ['', 'historico', 'editar'] },
   { path: 'treino', label: 'Treino', icon: 'gym', match: ['treino', 'sessao', 'exercicio'] },
   { path: 'corrida', label: 'Corrida', icon: 'run', match: ['corrida'] },
   { path: 'progresso', label: 'Progresso', icon: 'chart', match: ['progresso', 'revisao'] },
@@ -26,6 +26,7 @@ function Screen({ r }: { r: string[] }) {
     case 'treino': return b ? <WorkoutDetail id={b} /> : <Plan />
     case 'exercicio': return <ExerciseDetail id={b} />
     case 'sessao': return <Session id={b} />
+    case 'editar': return <EditWorkout key={b} logId={b} />
     case 'corrida': return b === 'nova' ? <RunForm /> : b ? <RunForm key={b} id={b} /> : <Running />
     case 'progresso': return <ProgressPage />
     case 'revisao': return <ReviewPage key={b} block={Number(b)} />
@@ -36,7 +37,7 @@ function Screen({ r }: { r: string[] }) {
 
 function App() {
   const r = useRoute()
-  const inSession = r[0] === 'sessao'
+  const inSession = r[0] === 'sessao' || r[0] === 'editar'
   return (
     <>
       <Screen r={r} />

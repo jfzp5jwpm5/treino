@@ -174,7 +174,10 @@ export function History() {
                   </div>
                 ))}
                 {it.w.notes && <p className="rounded-lg bg-paper p-2 text-mute">{it.w.notes}</p>}
-                <Btn variant="danger" className="w-full" onClick={() => confirm('Apagar este treino? Não é possível desfazer.') && update((db) => { db.workouts = db.workouts.filter((w) => w.id !== it.id) })}>Apagar treino</Btn>
+                <div className="grid grid-cols-2 gap-2">
+                  <Btn variant="ghost" onClick={() => go('editar/' + it.id)}>Editar</Btn>
+                  <Btn variant="danger" onClick={() => confirm('Apagar este treino? Não é possível desfazer.') && update((db) => { db.workouts = db.workouts.filter((w) => w.id !== it.id) })}>Apagar</Btn>
+                </div>
               </div>
             )}
           </Card>
