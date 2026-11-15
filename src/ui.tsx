@@ -193,7 +193,7 @@ export function ExerciseImage({ ex, both = false, className = '' }: { ex: Exerci
       {frames.map((i) =>
         failed[i] ? <Placeholder key={i} ex={ex} /> : (
           <figure key={i} className="relative overflow-hidden rounded-xl bg-line/40">
-            <img src={`/img/${ex.img}-${i}.jpg`} alt={`${ex.pt} — ${i === 0 ? 'posição inicial' : 'posição final'}`} loading="lazy"
+            <img src={`${import.meta.env.BASE_URL}img/${ex.img}-${i}.jpg`} alt={`${ex.pt} — ${i === 0 ? 'posição inicial' : 'posição final'}`} loading="lazy"
               onError={() => setFailed((f) => ({ ...f, [i]: true }))} className="aspect-[3/2] w-full object-cover" />
             {both && <figcaption className="absolute bottom-1 left-1 rounded-md bg-white/85 px-1.5 text-[11px] font-medium">{i === 0 ? 'Início' : 'Fim'}</figcaption>}
           </figure>

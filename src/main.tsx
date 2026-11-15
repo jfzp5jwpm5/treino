@@ -80,4 +80,4 @@ class Boundary extends Component<{ children: ReactNode }, { err: Error | null }>
 
 createRoot(document.getElementById('root')!).render(<StrictMode><Boundary><App /></Boundary></StrictMode>)
 
-if ('serviceWorker' in navigator && import.meta.env.PROD) navigator.serviceWorker.register('/sw.js')
+if ('serviceWorker' in navigator && import.meta.env.PROD) navigator.serviceWorker.register('sw.js')
